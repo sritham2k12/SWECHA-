@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code Analysis Tool</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        textarea {
+            width: 100%;
+            height: 150px;
+            margin-bottom: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        pre {
+            background: #f4f4f4;
+            padding: 10px;
+            border-radius: 5px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+    <h1>Automated Code Analysis</h1>
+    <p>Enter your code snippet below:</p>
+    <textarea id="codeInput" placeholder="Paste your code here..."></textarea>
+    <br>
+    <button onclick="analyzeCode()">Analyze Code</button>
+    <h2>Code Analysis Report</h2>
+    <pre id="reportOutput">No report generated yet.</pre>
+
+    <script>
+        async function analyzeCode() {
+            const codeInput = document.getElementById("codeInput").value;
+            const reportOutput = document.getElementById("reportOutput");
+
+            if (!codeInput.trim()) {
+                reportOutput.textContent = "Error: Please enter a code snippet.";
+                return;
+            }
+
+            reportOutput.textContent = "Analyzing code...";
+
+            try {
+                const response = await fetch("http://localhost:8000", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ code: codeInput })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    reportOutput.textContent = data.report;
+                } else {
+                    reportOutput.textContent = `Error: ${response.statusText}`;
+                }
+            } catch (error) {
+                reportOutput.textContent = `Error: Failed to fetch (${error.message}).`;
+            }
+        }
+    </script>
+</body>
+</html>
